@@ -67,6 +67,22 @@ Elite Estates is a premium, end-to-end Machine Learning web application designed
    - Access the dashboard at `http://127.0.0.1:8000`.
    - Use the **"Retrain"** button (Password: `a`) to sync model intelligence.
    - Use the **"Run Experiment"** button to tweak hyperparameters.
+   - **Track Experiments**: View real-time analytics on [DagsHub MLflow UI](https://dagshub.com/vanshsharma7832/HousePricePredictor.mlflow/).
+
+## 🐳 Docker Support
+
+You can also run the application using Docker for consistent environments:
+
+1. **Build the Image**:
+
+   ```bash
+   docker build -t house-predictor .
+   ```
+
+2. **Run the Container**:
+   ```bash
+   docker run -p 8000:8000 --env-file .env house-predictor
+   ```
 
 ## 📁 Project Structure
 

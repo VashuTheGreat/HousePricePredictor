@@ -1,0 +1,23 @@
+.git
+.gitignore
+.dockerignore
+.venv
+env/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.vscode/
+.idea/
+.env
+
+# Project specific ignores
+artifact/
+logs/
+mlruns/
+notebook/
+*.csv
+*.pkl
+uv.lock
+.python-version
+housepricepredictor.egg-info/
