@@ -49,3 +49,5 @@ RUN_TRAINING_DIR_NAME="saved_model"
 RUN_TRAINING_FILE_PATH="run_training.yaml"
 FINAL_MODEL_FILE_PATH=os.path.join("saved_model","model.pkl")
 FINAL_MODEL_PERFORMANCE_PATH=os.path.join("saved_model","run_training.yaml")
+REPO_OWNER='vanshsharma7832'
+REPO_NAME='HousePricePredictor'

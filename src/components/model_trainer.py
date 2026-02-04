@@ -13,6 +13,12 @@ from src.entity.artifact_entity import DataTransformationArtifact, ModelTrainerA
 from src.entity.estimator import MyModel
 import mlflow
 import mlflow.sklearn
+from src.constants import REPO_OWNER,REPO_NAME
+
+import dagshub
+dagshub.init(repo_owner=REPO_OWNER, repo_name=REPO_NAME, mlflow=True)
+
+
 
 class ModelTrainer:
     def __init__(self):
@@ -59,18 +65,19 @@ class ModelTrainer:
             
 
             # MLflow logging
-            mlflow.log_metric("r2_score", r2)
-            mlflow.log_metric("mse", mse)
-            mlflow.log_metric("mae", mae)
+            with mlflow.start_run():
+                mlflow.log_metric("r2_score", r2)
+                mlflow.log_metric("mse", mse)
+                mlflow.log_metric("mae", mae)
 
-            mlflow.log_param("n_estimators", self.model_trainer_config.n_estimators)
-            mlflow.log_param("min_samples_split", self.model_trainer_config.min_samples_split)
-            mlflow.log_param("min_samples_leaf", self.model_trainer_config.min_samples_leaf)
-            mlflow.log_param("max_depth", self.model_trainer_config.max_depth)
-            mlflow.log_param("criterion", self.model_trainer_config.criterion)
-            mlflow.log_param("random_state", self.model_trainer_config.random_state)
+                mlflow.log_param("n_estimators", self.model_trainer_config.n_estimators)
+                mlflow.log_param("min_samples_split", self.model_trainer_config.min_samples_split)
+                mlflow.log_param("min_samples_leaf", self.model_trainer_config.min_samples_leaf)
+                mlflow.log_param("max_depth", self.model_trainer_config.max_depth)
+                mlflow.log_param("criterion", self.model_trainer_config.criterion)
+                mlflow.log_param("random_state", self.model_trainer_config.random_state)
 
-            mlflow.sklearn.log_model(model, artifact_path="model")
+                mlflow.sklearn.log_model(model, artifact_path="model")
 
             return model, metric_artifact
 
