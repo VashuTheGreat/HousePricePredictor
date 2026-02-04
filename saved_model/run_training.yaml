@@ -1,0 +1,17 @@
+data_ingestion_artifact:
+  test_file_path: artifact\02_04_2026_21_05_33\data_ingestion\ingested\test.csv
+  trained_file_path: artifact\02_04_2026_21_05_33\data_ingestion\ingested\train.csv
+data_transformed_artifact:
+  transformed_object_file_path: artifact\02_04_2026_21_05_33\data_transformed\Objects
+  transformed_test_file_path: artifact\02_04_2026_21_05_33\data_transformed\test.npy
+  transformed_train_file_path: artifact\02_04_2026_21_05_33\data_transformed\train.npy
+data_validation_artifact:
+  transformed_object_file_path: artifact\02_04_2026_21_05_33\data_transformed\Objects
+  transformed_test_file_path: artifact\02_04_2026_21_05_33\data_transformed\test.npy
+  transformed_train_file_path: artifact\02_04_2026_21_05_33\data_transformed\train.npy
+model_trained_artifact:
+  metric_artifact:
+    mae: 2057.5225181667806
+    mse: 144198812.20438704
+    r2_score: 0.9807583919248691
+  trained_model_file_path: artifact\02_04_2026_21_05_33\model_trainer\trained_model\model.pkl

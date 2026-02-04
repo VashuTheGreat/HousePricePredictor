@@ -1,0 +1,50 @@
+columns:
+  - _id:  str
+  - locality: str
+  - house_type: str
+  - city: str
+  - area: float
+  - beds: int
+  - bathrooms: int
+  - balconies: int
+  - furnishing: str
+  - area_rate: float
+  - rent: float
+
+numerical_columns:
+  - beds
+  - bathrooms
+  - balconies
+  - area_rate
+  - rent
+
+categorical_columns:
+  - _id
+  - locality
+  - house_type
+  - city
+  - furnishing
+
+
+drop_columns: 
+  - _id
+  - locality
+  - house_type
+
+# for data transformation
+num_features:
+  - area_rate
+
+add_columns:
+  bhk:
+    - bhk
+    - house_type
+
+
+encode_columns:  
+  - city
+  - furnishing
+
+
+target_column:
+  - rent

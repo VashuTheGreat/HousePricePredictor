@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligence Tuner | Elite Estates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a, #020617);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #8b5cf6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        input {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #8b5cf6 !important;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+            outline: none !important;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-12">
+            <div>
+                <h1 class="text-3xl font-bold text-white">Intelligence Tuner</h1>
+                <p class="text-slate-400 mt-1">Refine model hyperparameters & pipeline logic</p>
+            </div>
+            <a href="/" class="glass px-5 py-2.5 rounded-full text-sm font-medium hover:bg-white/5 transition-all">
+                Back to Dashboard
+            </a>
+        </header>
+
+        <div class="glass p-8 rounded-3xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-32 h-32 bg-purple-500/10 blur-3xl -ml-16 -mt-16"></div>
+            
+            <form id="configForm" class="space-y-8">
+                <div id="dynamicFields" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Fields will be injected here -->
+                    <div class="col-span-2 flex justify-center py-12" id="initialLoader">
+                        <div class="loader w-8 h-8"></div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                    <p class="text-slate-500 text-xs italic italic max-w-md text-center md:text-left">
+                        Note: Updated parameters will apply to the next training session. Inaccurate values may degrade prediction intelligence.
+                    </p>
+                    <button type="submit" id="saveBtn" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-10 rounded-2xl transition-all shadow-lg shadow-purple-900/20 flex items-center space-x-3 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="saveText">Save Configuration</span>
+                        <div id="saveLoader" class="loader hidden"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 glass px-6 py-3 rounded-full opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center space-x-3">
+        <span id="toastMsg" class="font-medium text-sm"></span>
+    </div>
+
+    <script>
+        const configForm = document.getElementById('configForm');
+        const dynamicFields = document.getElementById('dynamicFields');
+        const initialLoader = document.getElementById('initialLoader');
+        const saveBtn = document.getElementById('saveBtn');
+        const saveLoader = document.getElementById('saveLoader');
+        const saveText = document.getElementById('saveText');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+
+        function showToast(msg, type = 'purple') {
+            toastMsg.innerText = msg;
+            toast.className = `fixed bottom-8 left-1/2 -translate-x-1/2 glass px-6 py-3 rounded-full z-50 flex items-center space-x-3 opacity-100 border-${type}-500/50`;
+            setTimeout(() => toast.classList.add('opacity-0'), 3000);
+        }
+
+        async function fetchConfig() {
+            try {
+                const res = await fetch('/get_config');
+                const config = await res.json();
+                
+                if (res.ok) {
+                    initialLoader.remove();
+                    
+                    Object.entries(config).forEach(([key, value]) => {
+                        const container = document.createElement('div');
+                        container.className = 'space-y-2 group';
+                        
+                        const labelText = key.startsWith('_') ? key.substring(1).replace(/_/g, ' ') : key.replace(/_/g, ' ');
+                        
+                        container.innerHTML = `
+                            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1 group-focus-within:text-purple-400 transition-colors">${labelText}</label>
+                            <input type="${typeof value === 'number' ? 'number' : 'text'}" 
+                                   step="any"
+                                   name="${key}" 
+                                   value="${value}" 
+                                   class="w-full p-4 rounded-xl text-sm"
+                                   required>
+                        `;
+                        dynamicFields.appendChild(container);
+                    });
+                } else {
+                    showToast('Failed to load configuration', 'red');
+                }
+            } catch (err) {
+                showToast('Backend connection failed', 'red');
+            }
+        }
+
+        configForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            saveBtn.disabled = true;
+            saveLoader.classList.remove('hidden');
+            saveText.innerText = 'Synchronizing...';
+            
+            const formData = new FormData(configForm);
+            const data = {};
+            formData.forEach((value, key) => {
+                // Convert back to numbers if they look like numbers
+                data[key] = !isNaN(value) && value !== '' ? (value.includes('.') ? parseFloat(value) : parseInt(value)) : value;
+            });
+            
+            try {
+                const res = await fetch('/update_config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (res.ok) {
+                    showToast('Configuration Synchronized Successfully', 'emerald');
+                } else {
+                    showToast('Update Failed', 'red');
+                }
+            } catch (err) {
+                showToast('Security Breach or Connection Lost', 'red');
+            } finally {
+                saveBtn.disabled = false;
+                saveLoader.classList.add('hidden');
+                saveText.innerText = 'Save Configuration';
+            }
+        });
+
+        // Initialize
+        fetchConfig();
+    </script>
+</body>
+</html>
