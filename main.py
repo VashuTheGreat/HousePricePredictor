@@ -83,4 +83,4 @@ async def update_config(config: dict = Body(...)):
         return {"error": str(e)}, 500
 
 if __name__ == "__main__":
-    uv.run("main:app",port=8000,reload=True)
+    uv.run("main:app", host="0.0.0.0", port=8000, reload=True)
